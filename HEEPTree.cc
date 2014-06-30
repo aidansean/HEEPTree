@@ -88,7 +88,7 @@ HEEPTree::beginJob()
   vars_FV_.push_back(new branch_wrapper_FV("el_pt"    )) ;
   vars_FV_.push_back(new branch_wrapper_FV("el_px"    )) ;
   vars_FV_.push_back(new branch_wrapper_FV("el_py"    )) ;
-  vars_FV_.push_back(new branch_wrapper_FV("el_px"    )) ;
+  vars_FV_.push_back(new branch_wrapper_FV("el_pz"    )) ;
   vars_FV_.push_back(new branch_wrapper_FV("el_E"     )) ;
   vars_FV_.push_back(new branch_wrapper_FV("el_eta"   )) ;
   vars_FV_.push_back(new branch_wrapper_FV("el_phi"   )) ;
