@@ -28,17 +28,22 @@ Implementation:
 #include <iostream>
 
 // user include files
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/EgammaReco/interface/BasicCluster.h"
+#include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h"
+#include "DataFormats/MuonReco/interface/MuonCocktails.h"
+
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
-#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
-#include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
-
+#include "RecoEgamma/EgammaElectronAlgos/interface/ElectronHcalHelper.h"
 #include "UserCode/HEEPSkims/interface/BranchWrapper.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -62,9 +67,22 @@ public:
   explicit HEEPTree(const edm::ParameterSet& iConfig);
   ~HEEPTree();
   
-  bool store(std::string,double);
-  bool store(std::string,float );
-  bool store(std::string,int   );
+  bool store(std::string, bool  );
+  bool store(std::string, double);
+  bool store(std::string, float );
+  bool store(std::string, int   );
+  bool store(std::string, unsigned);
+  bool store(std::string, std::vector<bool>  );
+  bool store(std::string, std::vector<double>);
+  bool store(std::string, std::vector<float >);
+  bool store(std::string, std::vector<int   >);
+  
+  bool add_branch(std::string);
+  bool add_branch(std::string,int);
+  bool branch_exists(std::string);
+  
+  void set_branch_type(int);
+  int  get_branch_type();
   
 private:
   virtual void beginJob() ;
@@ -75,13 +93,40 @@ private:
   void beginEvent() ;
   void endEvent() ;
   
-  std::vector<branch_wrapper_DV*> vars_DV_;
-  std::vector<branch_wrapper_FV*> vars_FV_;
-  std::vector<branch_wrapper_IV*> vars_IV_;
-  std::vector<branch_wrapper_D* > vars_D_;
-  std::vector<branch_wrapper_F* > vars_F_;
-  std::vector<branch_wrapper_I* > vars_I_;
+  void configure_branches();
+  
   // ----------member data ---------------------------
+  edm::EDGetTokenT<reco::BeamSpot> beamSpotLabel_ ;
+  double ScPtMin_;
+  double GsfPtMin_;
+  double GsfTrackPtMin_;
+  double muPtMin_;
+  
+  std::vector<BranchWrapperBase*> all_vars_;
+  std::vector<BranchWrapperBVV* > vars_BVV_;
+  std::vector<BranchWrapperDVV* > vars_DVV_;
+  std::vector<BranchWrapperFVV* > vars_FVV_;
+  std::vector<BranchWrapperIVV* > vars_IVV_;
+  std::vector<BranchWrapperBV*  > vars_BV_ ;
+  std::vector<BranchWrapperDV*  > vars_DV_ ;
+  std::vector<BranchWrapperFV*  > vars_FV_ ;
+  std::vector<BranchWrapperIV*  > vars_IV_ ;
+  std::vector<BranchWrapperB*   > vars_B_  ;
+  std::vector<BranchWrapperD*   > vars_D_  ;
+  std::vector<BranchWrapperF*   > vars_F_  ;
+  std::vector<BranchWrapperI*   > vars_I_  ;
+  
+  int current_var_type;
+  std::vector< std::pair<std::string, int> > list_of_branches ;
+  std::vector< std::pair<std::string, int> > missing_branches ;
+    
+  // Parameters for PU subtraction 
+  double EcalHcal1EffAreaBarrel_  ;
+  double EcalHcal1EffAreaEndcaps_ ;
+  
+  bool debug;
+  
+  float rho ;
 
   // config parameters -------------------------------
   TFile* myFile ;
